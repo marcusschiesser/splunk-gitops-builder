@@ -18,9 +18,14 @@ fi
 
 # Download apps from Github releases
 for RELEASE in ${GITHUB_RELEASES}; do
-    echo "Downloading ${RELEASE}"
-    URL=$(curl -sH "${AUTH}" "${RELEASE}" | jq -r .assets[0].url)
-    curl -LJO -H 'Accept: application/octet-stream' -H "${AUTH}" "${URL}"
+    echo "Downloading assets from ${RELEASE}"
+    RESPONSE=$(curl -sH "${AUTH}" "${RELEASE}")
+    COUNT=$(echo "${RESPONSE}" | jq '.assets | length')
+    for i in `seq 1 ${COUNT}`; do
+        URL=$(echo "${RESPONSE}" | jq -r .assets[$((${i}-1))].url)
+        echo "Download asset ${i} from ${URL}"
+        curl -LJO -H 'Accept: application/octet-stream' -H "${AUTH}" "${URL}"
+    done
 done
 
 # Untar apps

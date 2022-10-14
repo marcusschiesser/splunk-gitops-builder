@@ -21,8 +21,8 @@ for RELEASE in ${GITHUB_RELEASES}; do
     echo "Downloading assets from ${RELEASE}"
     RESPONSE=$(curl -sH "${AUTH}" "${RELEASE}")
     COUNT=$(echo "${RESPONSE}" | jq '.assets | length')
-    for i in `seq 1 ${COUNT}`; do
-        URL=$(echo "${RESPONSE}" | jq -r .assets[$((${i}-1))].url)
+    for i in $(seq 1 ${COUNT}); do
+        URL=$(echo "${RESPONSE}" | jq -r .assets[$((${i} - 1))].url)
         echo "Download asset ${i} from ${URL}"
         curl -LJO -H 'Accept: application/octet-stream' -H "${AUTH}" "${URL}"
     done
@@ -30,6 +30,14 @@ done
 
 # Untar apps
 for f in *.tgz; do
-    tar xzf "$f"
-    rm -f "$f"
+    if [ -f "$f" ]; then
+        tar xzf "$f"
+        rm -f "$f"
+    fi
+done
+for f in *.tar.gz; do
+    if [ -f "$f" ]; then
+        tar xzf "$f"
+        rm -f "$f"
+    fi
 done

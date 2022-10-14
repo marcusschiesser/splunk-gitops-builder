@@ -16,7 +16,15 @@ for APP in ${SPLUNKBASE_APPS}; do \
 done
 
 # Untar apps
-for f in *.tgz; do \
-    tar xzf "$f"; \
-    rm -f "$f"; \
+for f in *.tgz; do
+    if [ -f "$f" ]; then
+        tar xzf "$f"
+        rm -f "$f"
+    fi
+done
+for f in *.tar.gz; do
+    if [ -f "$f" ]; then
+        tar xzf "$f"
+        rm -f "$f"
+    fi
 done

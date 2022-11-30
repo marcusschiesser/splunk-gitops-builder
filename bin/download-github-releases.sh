@@ -21,6 +21,10 @@ for RELEASE in ${GITHUB_RELEASES}; do
     echo "Downloading assets from ${RELEASE}"
     RESPONSE=$(curl -sH "${AUTH}" "${RELEASE}")
     COUNT=$(echo "${RESPONSE}" | jq '.assets | length')
+    if [ $COUNT -eq 0 ]; then
+        echo $RESPONSE
+        exit 2
+    fi
     for i in $(seq 1 ${COUNT}); do
         URL=$(echo "${RESPONSE}" | jq -r .assets[$((${i} - 1))].url)
         echo "Download asset ${i} from ${URL}"

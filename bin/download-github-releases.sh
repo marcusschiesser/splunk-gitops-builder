@@ -1,19 +1,38 @@
 #!/bin/bash
 set -e
 
-if [ "$#" -ne 1 ] && [ "$#" -ne 2 ]; then
-    echo "Usage: download-github-releases.sh <github_personal_access_token> <list of urls of github releases>"
+print_usage() {
+    echo "Usage: download-github-releases.sh [-t] <github_personal_access_token> <list of urls of github releases>"
     echo "       First parameter <github_personal_access_token> is optional"
-    exit 1
-fi
+    echo "       If flag -t is set, the app remains stored in an archive and is not unpacked"
+}
 
+# parse opts
+UNTAR_ARCHIVE=1
+while getopts 't' OPTION; do
+  case "$OPTION" in
+    t)
+      UNTAR_ARCHIVE=0
+      ;;
+    ?)
+      print_usage
+      exit 2
+      ;;
+  esac
+done
+shift "$(($OPTIND -1))"
+
+# parse args
 if [ "$#" -eq 2 ]; then
     # personal access token is given
     GITHUB_PAT=$1
     AUTH="Authorization: token ${GITHUB_PAT}"
     GITHUB_RELEASES=$2
-else
+elif [ "$#" -eq 1 ]; then
     GITHUB_RELEASES=$1
+else
+    print_usage
+    exit 2
 fi
 
 # Download apps from Github releases
@@ -33,15 +52,17 @@ for RELEASE in ${GITHUB_RELEASES}; do
 done
 
 # Untar apps
-for f in *.tgz; do
-    if [ -f "$f" ]; then
-        tar xzf "$f"
-        rm -f "$f"
-    fi
-done
-for f in *.tar.gz; do
-    if [ -f "$f" ]; then
-        tar xzf "$f"
-        rm -f "$f"
-    fi
-done
+if [ $UNTAR_ARCHIVE -eq 1 ]; then
+    for f in *.tgz; do
+        if [ -f "$f" ]; then
+            tar xzf "$f"
+            rm -f "$f"
+        fi
+    done
+    for f in *.tar.gz; do
+        if [ -f "$f" ]; then
+            tar xzf "$f"
+            rm -f "$f"
+        fi
+    done
+fi

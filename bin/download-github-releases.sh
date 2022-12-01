@@ -32,7 +32,7 @@ elif [ "$#" -eq 1 ]; then
     GITHUB_RELEASES=$1
 else
     print_usage
-    exit 2
+    exit 1
 fi
 
 # Download apps from Github releases
@@ -42,7 +42,7 @@ for RELEASE in ${GITHUB_RELEASES}; do
     COUNT=$(echo "${RESPONSE}" | jq '.assets | length')
     if [ $COUNT -eq 0 ]; then
         echo $RESPONSE
-        exit 2
+        exit 1
     fi
     for i in $(seq 1 ${COUNT}); do
         URL=$(echo "${RESPONSE}" | jq -r .assets[$((${i} - 1))].url)

@@ -12,7 +12,6 @@ COPY ./bin /bin
 RUN chmod +x /bin/*.sh
 # Install NVM
 RUN wget https://raw.githubusercontent.com/creationix/nvm/master/install.sh -O - | bash 
-RUN echo "source /root/.nvm/nvm.sh" >> /root/.profile 
 # Force bash so github actions are using bash instead of dash
 RUN ln -sf /bin/bash /bin/sh
 
